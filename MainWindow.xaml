@@ -1,0 +1,36 @@
+﻿<Window x:Class="Kvalif.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Kvalif"
+        mc:Ignorable="d"
+        Icon="/Assets/Фон.ico"
+        Title="ORERO" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="10*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Background="#77A0FF" Grid.Row="0">
+            <StackPanel>
+                <Label Content="ORERO" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" FontWeight="DemiBold" Margin="0,20,0,0" Foreground="#FFE6E6E6"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Background="#B4CBFF" Grid.Row="1">
+            <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated"/>
+        </Grid>
+
+        <Grid Background="#99B8FF" Grid.Row="2">
+            <Image x:Name="LogOutButton" Source="Assets\lock.png"
+                       HorizontalAlignment="Right" 
+                       Margin="5,5, 30,5"
+                       MouseLeftButtonUp="Click_LogOut"
+                       Visibility="Visible"/>
+            
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,27 @@
+﻿<Window x:Class="Kvalif.TablesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Kvalif"
+        mc:Ignorable="d"
+        Title="Столы" Height="450" Width="300">
+    <Grid>
+        
+        <TextBox x:Name="TableBox" HorizontalAlignment="Center"  TextWrapping="Wrap"  VerticalAlignment="Top" Width="150" Margin="0,50,0,0" Height="30"/>
+        <Button x:Name="OneButton" Content="1" HorizontalAlignment="Left" Margin="67,121,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="OneButton_Click"/>
+        <Button x:Name="TwoButton" Content="2" HorizontalAlignment="Left" Margin="122,121,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="TwoButton_Click"/>
+        <Button x:Name="ThreeButton" Content="3" HorizontalAlignment="Left" Margin="177,121,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="ThreeButton_Click"/>
+        <Button x:Name="FourButton" Content="4" HorizontalAlignment="Left" Margin="67,176,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="FourButton_Click"/>
+        <Button x:Name="FiveButton" Content="5" HorizontalAlignment="Left" Margin="122,176,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="FiveButton_Click"/>
+        <Button x:Name="SixButton" Content="6" HorizontalAlignment="Left" Margin="177,176,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="SixButton_Click"/>
+        <Button x:Name="SevenButton" Content="7" HorizontalAlignment="Left" Margin="67,231,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="SevenButton_Click"/>
+        <Button x:Name="EightButton" Content="8" HorizontalAlignment="Left" Margin="122,231,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="EightButton_Click"/>
+        <Button x:Name="NineButton" Content="9" HorizontalAlignment="Left" Margin="177,231,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="NineButton_Click"/>
+        <Button x:Name="ZeroButton" Content="0" HorizontalAlignment="Left" Margin="122,286,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="ZeroButton_Click"/>
+        <Button x:Name="OkButton" Content="OK" HorizontalAlignment="Left" Margin="177,286,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="EnterButton_Click"/>
+        <Button x:Name="DeleteButton" Content="X" HorizontalAlignment="Left" Margin="67,286,0,0" VerticalAlignment="Top" Width="50" Height="50" FontSize="20" Click="ClearButton_Click"/> 
+        
+        
+    </Grid>
+</Window>
