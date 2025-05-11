@@ -32,13 +32,19 @@ namespace Kvalif
 
             GenerateEmptyTableCells();
 
-            var info = new WaiterInfo
+            using (var context = new OreroMenuEntities())
             {
-                ShowWaiter = $"{SessionData.UserName}"
-            };
+                var activeWaiters = context.Users
+                    .Where(u => u.Activity == 1)
+                    .Select(u => new WaiterInfo
+                    {
+                        ShowWaiter = u.Username
+                    })
+                    .ToList();
 
-            WLV.ItemsSource = new List<WaiterInfo> { info };
-            
+                WLV.ItemsSource = activeWaiters;
+            }
+
         }
 
         private void GenerateEmptyTableCells()

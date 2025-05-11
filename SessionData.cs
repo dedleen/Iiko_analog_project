@@ -11,5 +11,6 @@ namespace Kvalif
         public static int UserID { get; set; }
         public static string UserName { get; set; }
         public static string UserRole { get; set; }
+        public static int UserActivity { get; set; }
     }
 }

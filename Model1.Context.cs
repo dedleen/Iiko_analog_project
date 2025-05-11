@@ -15,17 +15,9 @@ namespace Kvalif
     
     public partial class OreroMenuEntities : DbContext
     {
-        private static OreroMenuEntities _context;
         public OreroMenuEntities()
             : base("name=OreroMenuEntities")
         {
-        }
-
-        public static OreroMenuEntities GetContext()
-        {
-            if (_context == null)
-                _context = new OreroMenuEntities();
-            return _context;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
