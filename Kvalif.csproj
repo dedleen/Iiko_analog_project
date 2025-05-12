@@ -92,6 +92,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Class1.cs" />
+    <Compile Include="Converters\BooleanToServedConverter.cs" />
+    <Compile Include="Converters\OrderDetailsToListConverter.cs" />
+    <Compile Include="Converters\OrdersToTotalConverter.cs" />
     <Compile Include="Dishes.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -128,6 +131,7 @@
     <Compile Include="WaiterPage.xaml.cs">
       <DependentUpon>WaiterPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WaiterViewModel.cs" />
     <Page Include="AdminPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

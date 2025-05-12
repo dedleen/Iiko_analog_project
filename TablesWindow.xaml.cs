@@ -84,16 +84,16 @@ namespace Kvalif
                 using (var context = new OreroMenuEntities())
                 {
                     var table = context.Tables.FirstOrDefault(t => t.Number == tableNumber);
-                    if(table == null)
+                    if (table == null)
                     {
-                        MessageBox.Show($"Стол с номером {tableNumber} не найдет.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Стол с номером {tableNumber} не найден.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
                     var order = new Orders
                     {
                         TableID = table.TableID,
-                        WaiterID = SessionData.UserID,
+                        WaiterID = SessionData.Instance.UserID,
                         DateCreated = DateTime.Now,
                         Status = "Открыт"
                     };
@@ -101,7 +101,7 @@ namespace Kvalif
                     context.Orders.Add(order);
                     context.SaveChanges();
 
-                    _mainFrame.Navigate(new OrderPage(_mainFrame, order));
+                    _mainFrame.Navigate(new OrderPage(_mainFrame, table));
 
                     Close();
                 }
@@ -110,7 +110,6 @@ namespace Kvalif
             {
                 MessageBox.Show($"Ошибка при создании заказа: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
         }
     }
 }

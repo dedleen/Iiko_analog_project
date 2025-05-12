@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Kvalif"
         mc:Ignorable="d"
         Icon="/Assets/Фон.ico"
-        Title="ORERO" Height="450" Width="800">
+        Title="ORERO" Height="750" Width="1000">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"></RowDefinition>
@@ -15,9 +15,23 @@
         </Grid.RowDefinitions>
 
         <Grid Background="#77A0FF" Grid.Row="0">
-            <StackPanel>
-                <Label Content="ORERO" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" FontWeight="DemiBold" Margin="0,20,0,0" Foreground="#FFE6E6E6"/>
+            <StackPanel VerticalAlignment="Center">
+                <Label Content="ORERO" 
+                       HorizontalAlignment="Center" 
+                       FontSize="25" FontWeight="DemiBold"
+                       Margin="0,20,0,0" Foreground="#FFE6E6E6"/>
+                <TextBlock Text="{Binding UserName}" 
+                           HorizontalAlignment="Center" 
+                           FontSize="14" 
+                           Foreground="White"/>
             </StackPanel>
+            <Button x:Name="CloseWSButton"
+                    Content="Закрыть личную смену" 
+                    HorizontalAlignment="Right" 
+                    Margin="0, 0, 10, 10" 
+                    VerticalAlignment="Bottom"
+                    Click="CloseWSButton_Click"
+                    Visibility="Visible"/>
         </Grid>
 
         <Grid Background="#B4CBFF" Grid.Row="1">
@@ -26,11 +40,10 @@
 
         <Grid Background="#99B8FF" Grid.Row="2">
             <Image x:Name="LogOutButton" Source="Assets\lock.png"
-                       HorizontalAlignment="Right" 
-                       Margin="5,5, 30,5"
-                       MouseLeftButtonUp="Click_LogOut"
-                       Visibility="Visible"/>
-            
+                   HorizontalAlignment="Right" 
+                   Margin="5,5, 30,5"
+                   MouseLeftButtonUp="Click_LogOut"
+                   Visibility="Visible"/>
         </Grid>
     </Grid>
 </Window>

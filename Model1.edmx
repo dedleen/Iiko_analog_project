@@ -32,6 +32,7 @@
           <Property Name="OrderID" Type="int" Nullable="false" />
           <Property Name="DishID" Type="int" Nullable="false" />
           <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="IsServed" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Orders">
           <Key>
@@ -197,6 +198,7 @@
           <Property Name="Quantity" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Dishes" Relationship="Self.FK_OrderDetails_Dishes" FromRole="OrderDetails" ToRole="Dishes" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_OrderDetails_Orders" FromRole="OrderDetails" ToRole="Orders" />
+          <Property Name="IsServed" Type="String" Unicode="true" FixedLength="false" MaxLength="50" />
         </EntityType>
         <EntityType Name="Orders">
           <Key>
@@ -361,6 +363,7 @@
           <EntitySetMapping Name="OrderDetails">
             <EntityTypeMapping TypeName="OreroMenuModel.OrderDetails">
               <MappingFragment StoreEntitySet="OrderDetails">
+                <ScalarProperty Name="IsServed" ColumnName="IsServed" />
                 <ScalarProperty Name="DetailID" ColumnName="DetailID" />
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />
                 <ScalarProperty Name="DishID" ColumnName="DishID" />

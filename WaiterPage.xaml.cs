@@ -20,6 +20,7 @@ namespace Kvalif
     /// </summary>
     public partial class WaiterPage : Page
     {
+
         public class WaiterInfo
         {
             public string ShowWaiter { get; set; }
@@ -28,6 +29,7 @@ namespace Kvalif
         public WaiterPage(Frame mainFrame)
         {
             InitializeComponent();
+            DataContext = new WaiterViewModel(mainFrame);
             _mainFrame = mainFrame;
 
             GenerateEmptyTableCells();
