@@ -19,12 +19,6 @@ namespace Kvalif
         public int DishID { get; set; }
         public int Quantity { get; set; }
         public string IsServed { get; set; }
-
-        public bool IsServedBool
-        {
-            get => IsServed == "1";
-            set => IsServed = value ? "1" : "0";
-        }
     
         public virtual Dishes Dishes { get; set; }
         public virtual Orders Orders { get; set; }

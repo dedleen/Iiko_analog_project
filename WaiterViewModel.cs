@@ -37,16 +37,20 @@ namespace Kvalif
         {
             using (var context = new OreroMenuEntities())
             {
+                Console.WriteLine("Загружаем столы...");
                 var tables = context.Tables
                     .Include(t => t.Orders.Select(o => o.OrderDetails.Select(od => od.Dishes)))
                     .ToList();
+                Console.WriteLine($"Загружено столов: {tables.Count}");
                 foreach (var table in tables)
                     Tables.Add(table);
 
+                Console.WriteLine("Загружаем активных официантов...");
                 var activeWaiters = context.Users
                     .Where(u => u.Activity == 1)
                     .Select(u => new WaiterInfo { ShowWaiter = u.Username })
                     .ToList();
+                Console.WriteLine($"Загружено официантов: {activeWaiters.Count}");
                 foreach (var waiter in activeWaiters)
                     Waiters.Add(waiter);
             }
@@ -56,19 +60,28 @@ namespace Kvalif
         {
             using (var context = new OreroMenuEntities())
             {
+                Console.WriteLine($"Открываем стол: TableID={table.TableID}");
                 var dbTable = context.Tables
                     .Include(t => t.Orders)
                     .FirstOrDefault(t => t.TableID == table.TableID);
                 if (!dbTable.Orders.Any(o => o.Status == "Открыт"))
                 {
+                    var activeUser = context.Users.FirstOrDefault(u => u.Activity == 1);
+                    if (activeUser == null)
+                    {
+                        System.Windows.MessageBox.Show("Нет активных официантов.", "Ошибка", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                        return;
+                    }
+
                     var order = new Orders
                     {
                         TableID = table.TableID,
-                        WaiterID = context.Users.First(u => u.Activity == 1).UserID,
+                        WaiterID = activeUser.UserID,
                         DateCreated = DateTime.Now,
                         Status = "Открыт",
                         TotalSum = 0m
                     };
+                    Console.WriteLine($"Создаём заказ: TableID={order.TableID}, WaiterID={order.WaiterID}");
                     context.Orders.Add(order);
                 }
                 dbTable.StatusTable = "Открыт";
@@ -79,7 +92,7 @@ namespace Kvalif
         }
         private void NavigateToOrders(Tables table)
         {
-            var orderPage = new OrderPage(_mainFrame, table);
+            var orderPage = new OrderPage(_mainFrame, table, SessionData.Instance.UserID);
             _mainFrame.Navigate(orderPage);
         }
 

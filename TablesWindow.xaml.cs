@@ -90,18 +90,25 @@ namespace Kvalif
                         return;
                     }
 
+                    if (SessionData.Instance.UserID <= 0)
+                    {
+                        MessageBox.Show("Официант не авторизован.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
                     var order = new Orders
                     {
                         TableID = table.TableID,
                         WaiterID = SessionData.Instance.UserID,
                         DateCreated = DateTime.Now,
-                        Status = "Открыт"
+                        Status = "Открыт",
+                        TotalSum = 0m
                     };
 
                     context.Orders.Add(order);
                     context.SaveChanges();
 
-                    _mainFrame.Navigate(new OrderPage(_mainFrame, table));
+                    _mainFrame.Navigate(new OrderPage(_mainFrame, table, SessionData.Instance.UserID));
 
                     Close();
                 }

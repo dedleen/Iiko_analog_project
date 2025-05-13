@@ -11,25 +11,23 @@ namespace Kvalif
 {
     using System;
     using System.Collections.Generic;
-    
+
     public partial class Orders
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Orders()
         {
             this.OrderDetails = new HashSet<OrderDetails>();
         }
-    
+
         public int OrderID { get; set; }
         public int TableID { get; set; }
         public int WaiterID { get; set; }
         public System.DateTime DateCreated { get; set; }
-        public string Status { get; set; }
         public decimal TotalSum { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public string Status { get; set; }
+
+        public virtual Tables Tables { get; set; } // Навигационное свойство
+        public virtual Users Users { get; set; }   // Навигационное свойство
         public virtual ICollection<OrderDetails> OrderDetails { get; set; }
-        public virtual Tables Tables { get; set; }
-        public virtual Users Users { get; set; }
     }
 }
