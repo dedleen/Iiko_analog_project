@@ -25,13 +25,6 @@
                            FontSize="14" 
                            Foreground="White"/>
             </StackPanel>
-            <Button x:Name="CloseWSButton"
-                    Content="Закрыть личную смену" 
-                    HorizontalAlignment="Right" 
-                    Margin="0, 0, 10, 10" 
-                    VerticalAlignment="Bottom"
-                    Click="CloseWSButton_Click"
-                    Visibility="Visible"/>
         </Grid>
 
         <Grid Background="#B4CBFF" Grid.Row="1">
@@ -44,6 +37,11 @@
                    Margin="5,5, 30,5"
                    MouseLeftButtonUp="Click_LogOut"
                    Visibility="Visible"/>
+            <Image x:Name="MenuOutButton" Source="/Assets/menu.png"
+            HorizontalAlignment="Right" 
+            Margin="5,5, 90,5"
+             MouseLeftButtonUp="Click_MenuOut"
+             Visibility="Visible"/>
         </Grid>
     </Grid>
 </Window>

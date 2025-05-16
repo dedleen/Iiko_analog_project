@@ -8,26 +8,11 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="AdminPage">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <ListView x:Name="ALV" Grid.Row="0" HorizontalContentAlignment="Stretch">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderBrush="Black" BorderThickness="1" CornerRadius="5" Margin="5" Padding="10">
-                        <Grid>
-                            <StackPanel>
-                                <TextBlock Text="{Binding ShowWaiter}" FontWeight="Bold"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-
-        <Button x:Name="BackButton" Grid.Row="1" Margin="10" HorizontalAlignment="Stretch" Content="Назад"/>
+    <Grid Background="White">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="200">
+            <Button Content="Заказы" Background="Gray" Foreground="Wheat" Click="OrdersButton_Click" Height="40" Margin="0,5" />
+            <Button Content="Отчеты" Background="Gray" Foreground="Wheat" Click="ReportsButton_Click" Height="40" Margin="0,5"/>
+            <Button Content="Персонал" Background="Gray" Foreground="Wheat" Click="StaffButton_Click" Height="40" Margin="0,5"/>
+        </StackPanel>
     </Grid>
 </Page>

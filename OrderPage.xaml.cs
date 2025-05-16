@@ -4,17 +4,20 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Data.Entity;
+using System.Diagnostics.Eventing.Reader;
+using System.Text;
 
 namespace Kvalif
 {
     public partial class OrderPage : Page
     {
+
         private readonly Frame _mainFrame;
         private readonly Tables _table;
         private readonly int _waiterId;
         public ObservableCollection<OrderItemViewModel> OrderItems { get; set; }
         private string _searchText;
-
+        
         public string SearchText
         {
             get => _searchText;
@@ -23,6 +26,86 @@ namespace Kvalif
                 _searchText = value;
                 FilterItems();
             }
+        }
+
+        private void GeneratePrecheck_Click(object sender, RoutedEventArgs e)
+        {
+            using (var context = new OreroMenuEntities())
+            {
+                var order = context.Orders
+                    .Include("OrderDetails")
+                    .FirstOrDefault(o => o.TableID == _table.TableID && o.Status == "Открыт");
+
+                if (order != null)
+                {
+                    StringBuilder receipt = new StringBuilder();
+                    receipt.AppendLine($"Стол №{_table.Number} — Пречек");
+                    receipt.AppendLine("Блюдо\t\tКол-во\tЦена");
+
+                    decimal total = 0;
+
+                    foreach (var item in order.OrderDetails)
+                    {
+                        receipt.AppendLine($"{item.Dishes.Name}\t{item.Quantity}\t{item.Quantity * item.Dishes.Price}₽");
+                        total += item.Quantity * item.Dishes.Price;
+                    }
+
+                    receipt.AppendLine($"\nИтого: {total}₽");
+
+                    MessageBox.Show(receipt.ToString(), "Пречек");
+
+
+                }
+            }
+        }
+
+        private void ChangeQuantity_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = DishesListBox.SelectedItem as OrderDetails;
+            if (selectedItem == null)
+            {
+                MessageBox.Show("Выберите блюдо.");
+                return;
+            }
+
+            var window = new ChangeQuantityWindow(selectedItem.Quantity);
+            window.Owner = Window.GetWindow(this); // чтобы окно было поверх текущего
+
+            if (window.ShowDialog() == true && window.NewQuantity.HasValue)
+            {
+                using (var context = new OreroMenuEntities())
+                {
+                    var item = context.OrderDetails.FirstOrDefault(i => i.DetailID == selectedItem.DetailID);
+                    if (item != null)
+                    {
+                        item.Quantity = window.NewQuantity.Value;
+                        context.SaveChanges();
+                    }
+                }
+
+                RefreshOrderList();
+            }
+        }
+
+        private void RefreshOrderList()
+        {
+            using (var context = new OreroMenuEntities())
+            {
+                var order = context.Orders
+                    .Include("OrderDetails.Dishes")
+                    .FirstOrDefault(o => o.TableID == _table.TableID && o.Status == "Открыт");
+
+                if (order != null)
+                {
+                    DishesListBox.ItemsSource = order.OrderDetails.ToList();
+                }
+            }
+        }
+
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            _mainFrame.Navigate(new WaiterPage(_mainFrame));
         }
 
         public OrderPage(Frame mainFrame, Tables table, int waiterId)
@@ -37,6 +120,36 @@ namespace Kvalif
 
             Find.TextChanged += (s, e) => SearchText = Find.Text;
             LoadCategories();
+        }
+
+        private void CloseOrder_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Вы уверены, что хотите закрыть заказ?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes && (SessionData.Instance.UserRole=="Admin" || SessionData.Instance.UserRole == "Manager"))
+            {
+                using (var context = new OreroMenuEntities())
+                {
+                    var openOrder = context.Orders
+                        .FirstOrDefault(o => o.TableID == _table.TableID && o.Status == "Открыт");
+
+                    if (openOrder != null)
+                    {
+                        openOrder.Status = "Закрыт";
+                        context.SaveChanges();
+                    }
+                }
+            
+            
+
+                    MessageBox.Show("Заказ закрыт!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Переход назад на страницу официанта
+                _mainFrame.Navigate(new WaiterPage(_mainFrame));
+            }
+            else
+            {
+                MessageBox.Show("У вас недостаточно прав для выполнения данного действия", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LoadOrderData()
@@ -69,7 +182,7 @@ namespace Kvalif
                         {
                             DishName = detail.Dishes?.Name ?? "Не указано",
                             Price = detail.Dishes?.Price.ToString("F2") + " Р" ?? "0.00 Р",
-                            IsServed = detail.IsServed ?? "0"
+                            IsServed = (detail.IsServed == "1")
                         });
                     }
                 }
@@ -119,9 +232,9 @@ namespace Kvalif
         {
             var button = sender as Button;
             var item = button.DataContext as OrderItemViewModel;
-            if (item != null && item.IsServed == "0")
+            if (!item.IsServed)
             {
-                item.IsServed = "1";
+                item.IsServed = true;
                 using (var context = new OreroMenuEntities())
                 {
                     var openOrder = context.Orders
@@ -171,7 +284,7 @@ namespace Kvalif
                 {
                     Orientation = Orientation.Vertical,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Top
                 };
 
                 foreach (var category in categories)
@@ -179,7 +292,7 @@ namespace Kvalif
                     var button = new Button
                     {
                         Content = category.Name,
-                        Width = 150,
+                        Width = 200,
                         Height = 30,
                         Margin = new Thickness(5),
                         Tag = category.CategoryID
@@ -203,7 +316,7 @@ namespace Kvalif
                 {
                     Orientation = Orientation.Vertical,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Top
                 };
 
                 var backButton = new Button
@@ -215,7 +328,7 @@ namespace Kvalif
                 };
                 backButton.Click += (s, e) =>
                 {
-                    if (CategoryFrame.CanGoBack) CategoryFrame.GoBack();
+                    LoadCategories();
                 };
                 dishPanel.Children.Add(backButton);
 
@@ -224,7 +337,7 @@ namespace Kvalif
                     var button = new Button
                     {
                         Content = $"{dish.Name} - {dish.Price} Р",
-                        Width = 150,
+                        Width = 200,
                         Height = 30,
                         Margin = new Thickness(5),
                         Tag = dish
@@ -255,6 +368,7 @@ namespace Kvalif
                         WaiterID = _waiterId
                     };
                     context.Orders.Add(openOrder);
+                    openOrder.TotalSum = openOrder.OrderDetails.Sum(d => (d.Dishes?.Price ?? 0m) * d.Quantity);
                     context.SaveChanges();
                 }
 
@@ -280,7 +394,7 @@ namespace Kvalif
                 {
                     DishName = dish.Name,
                     Price = dish.Price.ToString("F2") + " Р",
-                    IsServed = "0"
+                    IsServed = false
                 });
                 UpdateTotalPrice();
             }
@@ -291,6 +405,6 @@ namespace Kvalif
     {
         public string DishName { get; set; }
         public string Price { get; set; }
-        public string IsServed { get; set; }
+        public bool IsServed { get; set; }
     }
 }

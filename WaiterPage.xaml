@@ -9,28 +9,24 @@
       Title="WaiterPage">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
 
-        <!--Персонал-->
+
         <ListView x:Name="WLV" Grid.Column="0" Margin="5" HorizontalContentAlignment="Stretch">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1" Padding="10" Height="50">
-                        <TextBlock Text="{Binding ShowWaiter}" FontSize="15" Foreground="Black" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding ShowWaiter}" FontSize="15" FontWeight="Bold" IsEnabled="False"/>
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <!--Столы-->
-        <Grid Grid.Column="1" Background="White">
-            <UniformGrid x:Name="TableGrid" Rows="3" Columns="3"/>
-        </Grid>
+        <ScrollViewer Grid.Column="1">
+            <UniformGrid x:Name="TableGrid" Rows="3" Columns="3" Margin="10"/>
+        </ScrollViewer>
     </Grid>
 </Page>

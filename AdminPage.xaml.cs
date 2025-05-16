@@ -20,9 +20,28 @@ namespace Kvalif
     /// </summary>
     public partial class AdminPage : Page
     {
-        public AdminPage()
+        private Frame mainFrame;
+
+        public AdminPage(Frame frame)
         {
             InitializeComponent();
+            mainFrame = frame;
+        }
+
+        private void OrdersButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainFrame.Navigate(new WaiterPage(mainFrame, true));
+        }
+
+        private void ReportsButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainFrame.Navigate(new ReportsPage(mainFrame));
+        }
+
+        private void StaffButton_Click(object sender, RoutedEventArgs e)
+        {
+            var staffWindow = new StaffWindow();
+            staffWindow.ShowDialog();
         }
     }
 }

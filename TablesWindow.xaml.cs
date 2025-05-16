@@ -107,10 +107,15 @@ namespace Kvalif
 
                     context.Orders.Add(order);
                     context.SaveChanges();
+                    
+                    var existingOrder = context.Orders.FirstOrDefault(o => o.TableID == table.TableID && o.Status == "Открыт");
+                    if(existingOrder != null)
+                    {
+                        _mainFrame.Navigate(new OrderPage(_mainFrame, table, SessionData.Instance.UserID));
+                        Close();
+                        return;
 
-                    _mainFrame.Navigate(new OrderPage(_mainFrame, table, SessionData.Instance.UserID));
-
-                    Close();
+                    }
                 }
             }
             catch (Exception ex)

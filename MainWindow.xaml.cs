@@ -26,11 +26,11 @@ namespace Kvalif
             InitializeComponent();
             _entities = new OreroMenuEntities();
             MainFrame.Navigate(new AutorizationPage(MainFrame, this));
-            DataContext = this; // Для привязки данных
-            SessionData.Instance.PropertyChanged += SessionData_PropertyChanged; // Подписка на изменения
+            DataContext = this; 
+            SessionData.Instance.PropertyChanged += SessionData_PropertyChanged;
         }
 
-        // Свойство для привязки имени пользователя
+        // cвойство для привязки имени пользователя
         public string UserName
         {
             get => SessionData.Instance.UserName ?? "Не авторизирован";
@@ -56,13 +56,15 @@ namespace Kvalif
         {
             if (e.Content is AutorizationPage)
             {
+                MenuOutButton.Visibility = Visibility.Collapsed;
                 LogOutButton.Visibility = Visibility.Collapsed;
-                CloseWSButton.Visibility = Visibility.Collapsed;
+                
             }
             else
             {
+                MenuOutButton.Visibility = Visibility.Visible;
                 LogOutButton.Visibility = Visibility.Visible;
-                CloseWSButton.Visibility = Visibility.Visible;
+                
             }
         }
 
@@ -72,35 +74,30 @@ namespace Kvalif
             SessionData.Instance.UserName = null;
             SessionData.Instance.UserRole = null;
             SessionData.Instance.UserActivity = 0;
-            OnPropertyChanged(nameof(UserName)); // Явно обновляем привязку
+            OnPropertyChanged(nameof(UserName));
             MainFrame.Navigate(new AutorizationPage(MainFrame, this));
         }
 
-        private void CloseWSButton_Click(object sender, RoutedEventArgs e)
+        private void Click_MenuOut(object sender, RoutedEventArgs e)
         {
-            if (SessionData.Instance.UserID != 0 && SessionData.Instance.UserActivity == 1)
+            if (SessionData.Instance.UserRole == "Admin" || SessionData.Instance.UserRole == "Manager")
             {
-                var user = _entities.Users.FirstOrDefault(u => u.UserID == SessionData.Instance.UserID);
-                if (user != null)
-                {
-                    user.Activity = 0;
-                    _entities.SaveChanges();
-                    MessageBox.Show($"Смена закрыта для {SessionData.Instance.UserName}");
-                    SessionData.Instance.UserID = 0;
-                    SessionData.Instance.UserName = null;
-                    SessionData.Instance.UserRole = null;
-                    SessionData.Instance.UserActivity = 0;
-                    OnPropertyChanged(nameof(UserName)); // Явно обновляем привязку
-                    MainFrame.Navigate(new AutorizationPage(MainFrame, this));
-                }
+                MainFrame.Navigate(new AdminPage(MainFrame));
             }
+            else
+            {
+                MainFrame.Navigate(new WaiterPage(MainFrame));
+            }
+
         }
 
-        // Реализация INotifyPropertyChanged
+        
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 }

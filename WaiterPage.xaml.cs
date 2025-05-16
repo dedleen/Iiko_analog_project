@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,20 +21,44 @@ namespace Kvalif
     /// </summary>
     public partial class WaiterPage : Page
     {
-
         public class WaiterInfo
         {
             public string ShowWaiter { get; set; }
         }
+
         private Frame _mainFrame;
-        public WaiterPage(Frame mainFrame)
+        private bool showAllOrders = false;
+        public WaiterPage(Frame frame, bool showAllOrders = false)
         {
             InitializeComponent();
-            DataContext = new WaiterViewModel(mainFrame);
-            _mainFrame = mainFrame;
+            _mainFrame = frame;
+            this.showAllOrders = showAllOrders;
+            LoadWaiters();
+            GenerateTableCells();
+        }
+        
 
-            GenerateEmptyTableCells();
+        private void LoadTables()
+        {
+            using (var context = new OreroMenuEntities())
+            {
+                var openOrders = context.Orders
+                    .Where(o => o.Status == "Открыт")
+                    .Select(o => new
+                    {
+                        TableNumber = o.Tables.Number,
+                        WaiterName = o.Users.Username,
+                        TotalSum = o.TotalSum
+                    })
+                    .ToList();
 
+                WLV.ItemsSource = openOrders;
+            }
+        }
+
+
+        private void LoadWaiters()
+        {
             using (var context = new OreroMenuEntities())
             {
                 var activeWaiters = context.Users
@@ -46,37 +71,99 @@ namespace Kvalif
 
                 WLV.ItemsSource = activeWaiters;
             }
-
         }
 
-        private void GenerateEmptyTableCells()
+        private void GenerateTableCells()
         {
             TableGrid.Children.Clear();
 
-            for(int i = 0; i < 9; i++)
+            using (var context = new OreroMenuEntities())
             {
-                var btn = new Button
+                for (int i = 1; i <= 9; i++)
                 {
-                    Content = "+",
-                    FontSize = 50,
-                    Tag = i
-                };
+                    var existingOrder = context.Orders.FirstOrDefault(o =>
+                        o.TableID == i &&
+                        o.Status == "Открыт" &&
+                       (showAllOrders || o.WaiterID == SessionData.Instance.UserID));
 
-                btn.Click += (s, e) =>
-                {
-                    TablesWindow tablesWindow = new TablesWindow(_mainFrame);
-                    tablesWindow.ShowDialog();
-                };
+                    Button btn = new Button
+                    {
+                        FontSize = 16,
+                        Tag = i,
+                        Padding = new Thickness(5),
+                        Margin = new Thickness(5),
+                        Height = 100,
+                        Width = 150
+                    };
 
-                TableGrid.Children.Add(btn);
+                    if (existingOrder != null)
+                    {
+                        var dishNames = (from d in context.Dishes
+                                         join od in context.OrderDetails on d.DishID equals od.DishID
+                                         where od.OrderID == existingOrder.OrderID
+                                         select d.Name).ToList();
 
-                Grid.SetRow(btn, i / 3);
-                Grid.SetColumn(btn, i % 3);
+                        string dishes = string.Join(", ", dishNames);
+                        string content = $"Стол {i}\nБлюда: {dishes}\nСумма: {existingOrder.TotalSum} ₽";
 
-                
+                        btn.Content = new TextBlock
+                        {
+                            Text = content,
+                            TextWrapping = TextWrapping.Wrap,
+                            FontSize = 14
+                        };
+
+                        int capturedTableId = i;
+                        var table = context.Tables.FirstOrDefault(t => t.TableID == existingOrder.TableID);
+                        if (table != null)
+                        {
+                            var capturedTable = table;
+                            btn.Click += (s, e) =>
+                            {
+                                _mainFrame.Navigate(new OrderPage(_mainFrame, capturedTable, SessionData.Instance.UserID));
+                            };
+                        }
+                    }
+                    else
+                    {
+                        btn.Content = new TextBlock
+                        {
+                            Text = "+",
+                            FontSize = 40,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+
+                        int capturedTableId = i;
+                        btn.Click += (s, e) =>
+                        {
+                            using (var contextInner = new OreroMenuEntities())
+                            {
+                                var existingOrderInner = contextInner.Orders.FirstOrDefault(o =>
+                                    o.TableID == capturedTableId &&
+                                    o.Status == "Открыт");
+
+                                if (existingOrderInner != null)
+                                {
+                                    var table = contextInner.Tables.FirstOrDefault(t => t.TableID == capturedTableId);
+                                    if (table != null)
+                                    {
+                                        _mainFrame.Navigate(new OrderPage(_mainFrame, table, SessionData.Instance.UserID));
+                                    }
+                                }
+                                else
+                                {
+                                    TablesWindow tablesWindow = new TablesWindow(_mainFrame);
+                                    tablesWindow.ShowDialog();
+                                    GenerateTableCells();
+                                }
+                            }
+                        };
+                    }
+
+                    TableGrid.Children.Add(btn);
+                }
             }
         }
-       
-        
     }
 }

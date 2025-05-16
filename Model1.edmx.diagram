@@ -4,13 +4,13 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="01de958d6c954231a163952c3faee37c" Name="Diagram1" ZoomLevel="92">
+      <Diagram DiagramId="01de958d6c954231a163952c3faee37c" Name="Diagram1" ZoomLevel="132">
         <EntityTypeShape EntityType="OreroMenuModel.Categories" Width="1.5" PointX="4.625" PointY="6.125" IsExpanded="true" />
         <EntityTypeShape EntityType="OreroMenuModel.Dishes" Width="1.5" PointX="6.375" PointY="4.5" IsExpanded="true" />
         <EntityTypeShape EntityType="OreroMenuModel.OrderDetails" Width="1.5" PointX="5.25" PointY="1.25" IsExpanded="true" />
         <EntityTypeShape EntityType="OreroMenuModel.Orders" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="OreroMenuModel.sysdiagrams" Width="1.5" PointX="2.75" PointY="4.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="OreroMenuModel.Tables" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="OreroMenuModel.Tables" Width="1.5" PointX="0.625" PointY="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="OreroMenuModel.Users" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
         <AssociationConnector Association="OreroMenuModel.FK_Dishes_Categories" ManuallyRouted="false" />
         <AssociationConnector Association="OreroMenuModel.FK_OrderDetails_Dishes" ManuallyRouted="false" />

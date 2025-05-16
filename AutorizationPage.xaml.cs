@@ -48,7 +48,7 @@ namespace Kvalif
                     switch (user.Role)
                     {
                         case "Admin":
-                            _mainFrame.Navigate(new AdminPage());
+                            _mainFrame.Navigate(new AdminPage(_mainFrame));
                             break;
                         case "Waiter":
                             _mainFrame.Navigate(new WaiterPage(_mainFrame));
@@ -69,7 +69,7 @@ namespace Kvalif
                         switch (user.Role)
                         {
                             case "Admin":
-                                _mainFrame.Navigate(new AdminPage());
+                                _mainFrame.Navigate(new AdminPage(_mainFrame));
                                 break;
                             case "Waiter":
                                 _mainFrame.Navigate(new WaiterPage(_mainFrame));
