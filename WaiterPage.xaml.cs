@@ -99,7 +99,7 @@ namespace Kvalif
                     if (existingOrder != null)
                     {
                         var dishNames = (from d in context.Dishes
-                                         join od in context.OrderDetails on d.DishID equals od.DishID
+                                         join od in context.OrderDetails on d.DishID equals od.DishId
                                          where od.OrderID == existingOrder.OrderID
                                          select d.Name).ToList();
 

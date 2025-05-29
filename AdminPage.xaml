@@ -13,6 +13,7 @@
             <Button Content="Заказы" Background="Gray" Foreground="Wheat" Click="OrdersButton_Click" Height="40" Margin="0,5" />
             <Button Content="Отчеты" Background="Gray" Foreground="Wheat" Click="ReportsButton_Click" Height="40" Margin="0,5"/>
             <Button Content="Персонал" Background="Gray" Foreground="Wheat" Click="StaffButton_Click" Height="40" Margin="0,5"/>
+            <Button Content="Стоп-лист" Background="Gray" Foreground="Wheat" Click="StopListButton_Click" Height="40" Margin="0,5"/>
         </StackPanel>
     </Grid>
 </Page>

@@ -1,0 +1,39 @@
+﻿<Page x:Class="Kvalif.StopListPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Редактирование стоп-листа"
+      Loaded="Page_Loaded">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBox x:Name="SearchBox"
+                 Width="300"
+                 Margin="0 0 0 10"
+                 VerticalAlignment="Top"
+                 TextChanged="SearchBox_TextChanged"/>
+
+        <DataGrid x:Name="DishesDataGrid"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="False"
+                  CanUserAddRows="False"
+                  SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
+                <DataGridCheckBoxColumn Header="В стоп-листе" Binding="{Binding IsInStopList}" Width="150"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Grid.Row="2"
+                Content="Сохранить изменения"
+                Margin="0 10 0 0"
+                Width="200"
+                HorizontalAlignment="Left"
+                Click="SaveButton_Click"/>
+    </Grid>
+</Page>

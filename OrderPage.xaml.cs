@@ -372,7 +372,7 @@ namespace Kvalif
                     context.SaveChanges();
                 }
 
-                var existingDetail = openOrder.OrderDetails.FirstOrDefault(d => d.DishID == dish.DishID);
+                var existingDetail = openOrder.OrderDetails.FirstOrDefault(d => d.DishId == dish.DishID);
                 if (existingDetail != null)
                 {
                     existingDetail.Quantity += 1;
@@ -382,7 +382,7 @@ namespace Kvalif
                     var newDetail = new OrderDetails
                     {
                         OrderID = openOrder.OrderID,
-                        DishID = dish.DishID,
+                        DishId = dish.DishID,
                         Quantity = 1,
                         IsServed = "0"
                     };

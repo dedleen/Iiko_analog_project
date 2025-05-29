@@ -16,7 +16,7 @@ namespace Kvalif
     {
         public int DetailID { get; set; }
         public int OrderID { get; set; }
-        public int DishID { get; set; }
+        public int DishId { get; set; }
         public int Quantity { get; set; }
         public string IsServed { get; set; }
     

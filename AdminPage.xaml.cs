@@ -43,5 +43,11 @@ namespace Kvalif
             var staffWindow = new StaffWindow();
             staffWindow.ShowDialog();
         }
+
+        private void StopListButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService?.Navigate(new StopListPage());
+        }
+
     }
 }

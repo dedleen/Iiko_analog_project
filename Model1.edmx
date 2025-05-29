@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="Хранилище OreroMenuModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="Хранилище OreroMenuModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Categories">
           <Key>
             <PropertyRef Name="CategoryID" />
@@ -30,7 +30,7 @@
           </Key>
           <Property Name="DetailID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="OrderID" Type="int" Nullable="false" />
-          <Property Name="DishID" Type="int" Nullable="false" />
+          <Property Name="DishId" Type="int" Nullable="false" />
           <Property Name="Quantity" Type="int" Nullable="false" />
           <Property Name="IsServed" Type="nvarchar" MaxLength="50" />
         </EntityType>
@@ -93,7 +93,7 @@
               <PropertyRef Name="DishID" />
             </Principal>
             <Dependent Role="OrderDetails">
-              <PropertyRef Name="DishID" />
+              <PropertyRef Name="DishId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -162,7 +162,8 @@
             <End Role="Orders" EntitySet="Orders" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="OreroMenuModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -194,11 +195,11 @@
           </Key>
           <Property Name="DetailID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="OrderID" Type="Int32" Nullable="false" />
-          <Property Name="DishID" Type="Int32" Nullable="false" />
+          <Property Name="DishId" Type="Int32" Nullable="false" />
           <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="IsServed" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Dishes" Relationship="Self.FK_OrderDetails_Dishes" FromRole="OrderDetails" ToRole="Dishes" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_OrderDetails_Orders" FromRole="OrderDetails" ToRole="Orders" />
-          <Property Name="IsServed" Type="String" Unicode="true" FixedLength="false" MaxLength="50" />
         </EntityType>
         <EntityType Name="Orders">
           <Key>
@@ -241,8 +242,8 @@
           <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Code" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Role" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Users" FromRole="Users" ToRole="Orders" />
           <Property Name="Activity" Type="Int32" />
+          <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Users" FromRole="Users" ToRole="Orders" />
         </EntityType>
         <Association Name="FK_Dishes_Categories">
           <End Role="Categories" Type="Self.Categories" Multiplicity="1" />
@@ -264,7 +265,7 @@
               <PropertyRef Name="DishID" />
             </Principal>
             <Dependent Role="OrderDetails">
-              <PropertyRef Name="DishID" />
+              <PropertyRef Name="DishId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -363,11 +364,11 @@
           <EntitySetMapping Name="OrderDetails">
             <EntityTypeMapping TypeName="OreroMenuModel.OrderDetails">
               <MappingFragment StoreEntitySet="OrderDetails">
-                <ScalarProperty Name="IsServed" ColumnName="IsServed" />
                 <ScalarProperty Name="DetailID" ColumnName="DetailID" />
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />
-                <ScalarProperty Name="DishID" ColumnName="DishID" />
+                <ScalarProperty Name="DishId" ColumnName="DishId" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="IsServed" ColumnName="IsServed" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -406,11 +407,11 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="OreroMenuModel.Users">
               <MappingFragment StoreEntitySet="Users">
-                <ScalarProperty Name="Activity" ColumnName="Activity" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="Activity" ColumnName="Activity" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
