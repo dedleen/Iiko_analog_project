@@ -16,10 +16,10 @@ namespace Kvalif
         private string _userRole;
         private int _userActivity;
 
-        // Приватный конструктор для singleton
+        
         private SessionData() { }
 
-        // Получение единственного экземпляра
+       
         public static SessionData Instance => _instance;
 
         public int UserID

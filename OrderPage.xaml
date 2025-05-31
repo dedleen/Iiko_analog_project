@@ -18,24 +18,38 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-      
+
         <StackPanel Grid.Column="0" Margin="10">
+
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <TextBlock Text="Официант:" VerticalAlignment="Center" Width="70" Margin="0,0,5,0" Visibility="Collapsed"/>
+                <ComboBox x:Name="comboBoxWaiters"
+              Width="150"
+              DisplayMemberPath="Username"
+              SelectedValuePath="UserID"
+              SelectionChanged="comboBoxWaiters_SelectionChanged" Visibility="Collapsed" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <TextBlock Text="Стол:" VerticalAlignment="Center" Width="70" Margin="0,0,5,0" Visibility="Collapsed"/>
+                <ComboBox x:Name="comboBoxTables"
+              Width="150"
+              DisplayMemberPath="Number"
+              SelectedValuePath="TableID"
+              SelectionChanged="comboBoxTables_SelectionChanged" 
+                          Visibility="Collapsed"/>
+            </StackPanel>
+
             <WrapPanel>
-               <Button Content="Назад"
-                    HorizontalAlignment="Left"
-                    Foreground="White"
-                    Background="Gray"
-                    Padding="10"
-                    Click="BackButton_Click"
-                />
-                <Button Content="Кол-во"
-                        FontSize="12"
-                        Padding="10"
-                        Foreground="White"
-                        Background="Gray"
-                        Margin="1,0,1,0"
-                        Click="ChangeQuantity_Click"
-                    />  
+                <Button Content="Назад"
+                HorizontalAlignment="Left"
+                Foreground="White"
+                Background="Gray"
+                Padding="10"
+                Click="BackButton_Click"
+            />
+               
             </WrapPanel>
 
             <ListBox x:Name="DishesListBox" ItemsSource="{Binding OrderItems}">
@@ -44,7 +58,8 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding DishName}" Width="150"/>
                             <TextBlock Text="{Binding Price}" Width="80"/>
-                            <CheckBox IsChecked="{Binding IsServed}" Content="Подача"/>
+                            <CheckBox IsChecked="{Binding IsServed}" Content="Подача" Margin="20,0,0,0"/>
+                            <Button Content="Удалить" Click="DeleteButton_Click" Margin="50,0,0,0"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

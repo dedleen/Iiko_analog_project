@@ -6,15 +6,122 @@ using System.Windows.Controls;
 using System.Data.Entity;
 using System.Diagnostics.Eventing.Reader;
 using System.Text;
+using System.ComponentModel;
+using Kvalif.ViewModels;
+using System.Windows.Media;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.IO;
+using System.Diagnostics;
 
 namespace Kvalif
 {
     public partial class OrderPage : Page
     {
+        private Orders currentOrder;
 
-        private readonly Frame _mainFrame;
+        private readonly System.Windows.Controls.Frame _mainFrame;
         private readonly Tables _table;
         private readonly int _waiterId;
+
+        public OrderPage(Orders order)
+        {
+            InitializeComponent();
+            currentOrder = order;
+
+            LoadWaiters();
+            LoadTables();
+
+            comboBoxWaiters.SelectedValue = currentOrder.WaiterID;
+            comboBoxTables.SelectedValue = currentOrder.TableID;
+        }
+        
+        
+        private void LoadWaiters()
+        {
+            using (var db = new OreroMenuEntities())
+            {
+                var waiters = db.Users
+                    .Where(u => u.Role == "Waiter")
+                    .ToList();
+
+                MessageBox.Show($"Официантов загружено: {waiters.Count}");
+                comboBoxWaiters.ItemsSource = waiters;
+            }
+        }
+
+        private void LoadTables()
+        {
+            using(var db = new OreroMenuEntities())
+            {
+                var tables = db.Tables.ToList();
+                MessageBox.Show($"Столов загружено: {tables.Count}");
+                comboBoxTables.ItemsSource = tables;
+            }
+        }
+
+        private void comboBoxWaiters_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (comboBoxWaiters.SelectedValue is int newWaiterID && newWaiterID != currentOrder.WaiterID)
+            {
+                var selectedWaiter = (Users)comboBoxWaiters.SelectedItem;
+
+                var result = MessageBox.Show(
+                    $"Вы уверены, что хотите изменить официанта на {selectedWaiter.Username}?",
+                    "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    using (var db = new OreroMenuEntities())
+                    {
+                        var orderToUpdate = db.Orders.FirstOrDefault(o => o.OrderID == currentOrder.OrderID);
+                        if (orderToUpdate != null)
+                        {
+                            orderToUpdate.WaiterID = newWaiterID;
+                            db.SaveChanges();
+                            currentOrder.WaiterID = newWaiterID;
+                        }
+                    }
+                }
+                else
+                {
+                    comboBoxWaiters.SelectedValue = currentOrder.WaiterID;
+                }
+            }
+        }
+
+        private void comboBoxTables_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (comboBoxTables.SelectedValue is int newTableID && newTableID != currentOrder.TableID)
+            {
+                var selectedTable = (Tables)comboBoxTables.SelectedItem;
+
+                var result = MessageBox.Show(
+                    $"Вы уверены, что хотите изменить стол на №{selectedTable.Number}?",
+                    "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    using (var db = new OreroMenuEntities())
+                    {
+                        var orderToUpdate = db.Orders.FirstOrDefault(o => o.OrderID == currentOrder.OrderID);
+                        if (orderToUpdate != null)
+                        {
+                            orderToUpdate.TableID = newTableID;
+                            db.SaveChanges();
+                            currentOrder.TableID = newTableID;
+                        }
+                    }
+                }
+                else
+                {
+                    comboBoxTables.SelectedValue = currentOrder.TableID;
+                }
+            }
+        }
+
+
         public ObservableCollection<OrderItemViewModel> OrderItems { get; set; }
         private string _searchText;
         
@@ -34,59 +141,107 @@ namespace Kvalif
             {
                 var order = context.Orders
                     .Include("OrderDetails")
+                    .Include("OrderDetails.Dishes")
                     .FirstOrDefault(o => o.TableID == _table.TableID && o.Status == "Открыт");
 
                 if (order != null)
                 {
-                    StringBuilder receipt = new StringBuilder();
-                    receipt.AppendLine($"Стол №{_table.Number} — Пречек");
-                    receipt.AppendLine("Блюдо\t\tКол-во\tЦена");
+                    string fileName = $"Пречек_Стол_{_table.Number}_{DateTime.Now:yyyyMMdd_HHmmss}.docx";
+                    string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), fileName);
 
-                    decimal total = 0;
-
-                    foreach (var item in order.OrderDetails)
+                    using (WordprocessingDocument wordDoc = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
                     {
-                        receipt.AppendLine($"{item.Dishes.Name}\t{item.Quantity}\t{item.Quantity * item.Dishes.Price}₽");
-                        total += item.Quantity * item.Dishes.Price;
+                        MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
+                        mainPart.Document = new Document();
+                        Body body = new Body();
+
+                        Paragraph header = new Paragraph(
+                            new Run(
+                                new Text($"Стол №{_table.Number} — Пречек"))
+                        );
+                        header.ParagraphProperties = new ParagraphProperties(
+                            new Justification() { Val = JustificationValues.Center },
+                            new SpacingBetweenLines() { After = "200" }
+                        );
+                        body.AppendChild(header);
+
+                        Table table = new Table();
+
+                        TableProperties tblProps = new TableProperties(
+                            new TableBorders(
+                                new TopBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                new BottomBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                new LeftBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                new RightBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                new InsideHorizontalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 },
+                                new InsideVerticalBorder { Val = new EnumValue<BorderValues>(BorderValues.Single), Size = 4 }
+                            )
+                        );
+                        table.AppendChild(tblProps);
+
+                        TableRow headerRow = new TableRow();
+                        headerRow.Append(
+                            CreateCell("Блюдо"),
+                            CreateCell("Кол-во"),
+                            CreateCell("Цена")
+                        );
+                        table.Append(headerRow);
+
+                        decimal total = 0;
+
+                        foreach (var item in order.OrderDetails)
+                        {
+                            decimal price = item.Quantity * item.Dishes.Price;
+                            total += price;
+
+                            TableRow row = new TableRow();
+                            row.Append(
+                                CreateCell(item.Dishes.Name),
+                                CreateCell(item.Quantity.ToString()),
+                                CreateCell($"{price} ₽")
+                            );
+                            table.Append(row);
+                        }
+
+                        body.AppendChild(table);
+
+                        Paragraph totalParagraph = new Paragraph(
+                            new Run(
+                                new Text($"\nИтого: {total} ₽"))
+                        );
+                        totalParagraph.ParagraphProperties = new ParagraphProperties(
+                            new Justification() { Val = JustificationValues.Right },
+                            new SpacingBetweenLines() { Before = "200" }
+                        );
+                        body.AppendChild(totalParagraph);
+
+                        mainPart.Document.Append(body);
+                        mainPart.Document.Save();
                     }
 
-                    receipt.AppendLine($"\nИтого: {total}₽");
-
-                    MessageBox.Show(receipt.ToString(), "Пречек");
-
-
+                    Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                    MessageBox.Show($"Пречек сохранён в документ: {filePath}", "Готово");
                 }
-            }
-        }
-
-        private void ChangeQuantity_Click(object sender, RoutedEventArgs e)
-        {
-            var selectedItem = DishesListBox.SelectedItem as OrderDetails;
-            if (selectedItem == null)
-            {
-                MessageBox.Show("Выберите блюдо.");
-                return;
-            }
-
-            var window = new ChangeQuantityWindow(selectedItem.Quantity);
-            window.Owner = Window.GetWindow(this); // чтобы окно было поверх текущего
-
-            if (window.ShowDialog() == true && window.NewQuantity.HasValue)
-            {
-                using (var context = new OreroMenuEntities())
+                else
                 {
-                    var item = context.OrderDetails.FirstOrDefault(i => i.DetailID == selectedItem.DetailID);
-                    if (item != null)
-                    {
-                        item.Quantity = window.NewQuantity.Value;
-                        context.SaveChanges();
-                    }
+                    MessageBox.Show("Нет открытых заказов для этого стола.");
                 }
-
-                RefreshOrderList();
             }
         }
 
+
+        private TableCell CreateCell(string text)
+        {
+            return new TableCell(
+                new Paragraph(
+                    new Run(
+                        new Text(text)
+                    )
+                )
+            );
+        }
+
+     
         private void RefreshOrderList()
         {
             using (var context = new OreroMenuEntities())
@@ -108,7 +263,7 @@ namespace Kvalif
             _mainFrame.Navigate(new WaiterPage(_mainFrame));
         }
 
-        public OrderPage(Frame mainFrame, Tables table, int waiterId)
+        public OrderPage(System.Windows.Controls.Frame mainFrame, Tables table, int waiterId)
         {
             InitializeComponent();
             _mainFrame = mainFrame;
@@ -143,7 +298,7 @@ namespace Kvalif
 
                     MessageBox.Show("Заказ закрыт!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Переход назад на страницу официанта
+                
                 _mainFrame.Navigate(new WaiterPage(_mainFrame));
             }
             else
@@ -198,6 +353,8 @@ namespace Kvalif
             DishesListBox.ItemsSource = filteredItems;
             UpdateTotalPrice();
         }
+
+
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
@@ -282,9 +439,9 @@ namespace Kvalif
 
                 var categoryPanel = new StackPanel
                 {
-                    Orientation = Orientation.Vertical,
+                    Orientation = System.Windows.Controls.Orientation.Vertical,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Top
+                    VerticalAlignment = System.Windows.VerticalAlignment.Top
                 };
 
                 foreach (var category in categories)
@@ -314,9 +471,9 @@ namespace Kvalif
 
                 var dishPanel = new StackPanel
                 {
-                    Orientation = Orientation.Vertical,
+                    Orientation = System.Windows.Controls.Orientation.Vertical,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Top
+                    VerticalAlignment = System.Windows.VerticalAlignment.Top
                 };
 
                 var backButton = new Button
@@ -342,6 +499,12 @@ namespace Kvalif
                         Margin = new Thickness(5),
                         Tag = dish
                     };
+
+                    if(dish.InStopList)
+                    {
+                        button.Foreground = Brushes.Red;
+                        button.Background = Brushes.LightCoral;
+                    }
                     button.Click += (s, e) => AddToOrder((Dishes)button.Tag);
                     dishPanel.Children.Add(button);
                 }
@@ -351,6 +514,12 @@ namespace Kvalif
 
         private void AddToOrder(Dishes dish)
         {
+            if (dish.InStopList)
+            {
+                MessageBox.Show("Это блюдо находится в стоп-листе и не может быть добавлено в заказ.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             using (var context = new OreroMenuEntities())
             {
                 var openOrder = context.Orders
@@ -368,11 +537,10 @@ namespace Kvalif
                         WaiterID = _waiterId
                     };
                     context.Orders.Add(openOrder);
-                    openOrder.TotalSum = openOrder.OrderDetails.Sum(d => (d.Dishes?.Price ?? 0m) * d.Quantity);
                     context.SaveChanges();
                 }
 
-                var existingDetail = openOrder.OrderDetails.FirstOrDefault(d => d.DishId == dish.DishID);
+                var existingDetail = openOrder.OrderDetails.FirstOrDefault(d => d.DishID == dish.DishID);
                 if (existingDetail != null)
                 {
                     existingDetail.Quantity += 1;
@@ -382,12 +550,13 @@ namespace Kvalif
                     var newDetail = new OrderDetails
                     {
                         OrderID = openOrder.OrderID,
-                        DishId = dish.DishID,
+                        DishID = dish.DishID,
                         Quantity = 1,
                         IsServed = "0"
                     };
                     context.OrderDetails.Add(newDetail);
                 }
+
                 context.SaveChanges();
 
                 OrderItems.Add(new OrderItemViewModel
@@ -396,9 +565,12 @@ namespace Kvalif
                     Price = dish.Price.ToString("F2") + " Р",
                     IsServed = false
                 });
+
                 UpdateTotalPrice();
             }
         }
+
+   
     }
 
     public class OrderItemViewModel
@@ -407,4 +579,6 @@ namespace Kvalif
         public string Price { get; set; }
         public bool IsServed { get; set; }
     }
+    
 }
+

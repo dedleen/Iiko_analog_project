@@ -16,6 +16,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding UserID}" IsReadOnly="True" />
                 <DataGridTextColumn Header="Имя пользователя" Binding="{Binding Username}" />
+                <DataGridTextColumn Header="Код" Binding="{Binding Code}"/>
                 <DataGridTextColumn Header="Роль" Binding="{Binding Role}" />
                 <DataGridTextColumn Header="Активность" Binding="{Binding Activity}" />
                 <DataGridTemplateColumn Header="Удалить">

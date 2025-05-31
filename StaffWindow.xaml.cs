@@ -33,14 +33,6 @@ namespace Kvalif
             }
         }
 
-       /*private void LoadUsers()
-        {
-            using (var context = new OreroMenuEntities())
-            {
-                var users = context.Users.ToList();
-                UsersDataGrid.ItemsSource = users;
-            }
-        }*/
 
         private void DeleteUser_Click(object sender, RoutedEventArgs e)
         {
@@ -76,15 +68,17 @@ namespace Kvalif
 
                 worksheet.Cell(1, 1).Value = "ID";
                 worksheet.Cell(1, 2).Value = "Имя пользователя";
-                worksheet.Cell(1, 3).Value = "Роль";
-                worksheet.Cell(1, 4).Value = "Активен";
+                worksheet.Cell(1, 3).Value = "Код";
+                worksheet.Cell(1, 4).Value = "Роль";
+                worksheet.Cell(1, 5).Value = "Активен";
 
                 for (int i = 0; i < users.Count; i++)
                 {
                     worksheet.Cell(i + 2, 1).Value = users[i].UserID;
                     worksheet.Cell(i + 2, 2).Value = users[i].Username;
-                    worksheet.Cell(i + 2, 3).Value = users[i].Role;
-                    worksheet.Cell(i + 2, 4).Value = users[i].Activity == 1 ? "Да" : "Нет";
+                    worksheet.Cell(i + 2, 3).Value = users[i].Code;
+                    worksheet.Cell(i + 2, 4).Value = users[i].Role;
+                    worksheet.Cell(i + 2, 5).Value = users[i].Activity == 1 ? "Да" : "Нет";
                 }
 
                 var dialog = new Microsoft.Win32.SaveFileDialog
@@ -110,6 +104,16 @@ namespace Kvalif
                 {
                     if (item is Users user)
                     {
+
+                        if (string.IsNullOrWhiteSpace(user.Username) ||
+                            string.IsNullOrWhiteSpace(user.Code) ||
+                            string.IsNullOrWhiteSpace(user.Role) ||
+                            user.Activity == null)
+                        {
+                            MessageBox.Show($"Ошибка: Не все поля заполнены у пользователя с ID {user.UserID}.", "Ошибка ввода", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
                         var existing = context.Users.Find(user.UserID);
                         if (existing != null)
                         {

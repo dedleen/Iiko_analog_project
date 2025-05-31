@@ -1,0 +1,32 @@
+﻿<Window x:Class="Kvalif.StopList"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Kvalif"
+        mc:Ignorable="d"
+        Title="StopList" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="10">
+            <TextBox x:Name="SearchBox" Width="300" Margin="0,0,10,0"  
+                 TextChanged="SearchBox_TextChanged"/>
+            <Button Content="Сбросить" Click="ResetSearch_Click"/>
+        </StackPanel>
+
+        <DataGrid x:Name="dishesDataGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="False" Margin="10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название" Binding="{Binding Name}" IsReadOnly="True" Width="*"/>
+                <DataGridCheckBoxColumn Header="В стоп-листе" Binding="{Binding InStopList, Mode=TwoWay}" Width="150"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Content="Сохранить изменения" Grid.Row="2" Click="SaveStopListChanges_Click"
+            Margin="10" Width="150" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Padding="10"/>
+    </Grid>
+</Window>

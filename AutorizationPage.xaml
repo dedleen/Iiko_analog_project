@@ -15,11 +15,11 @@
         </Grid.RowDefinitions>
         <StackPanel>
             <Grid  Grid.Row="0">
-            <TextBlock Text="Введите код:" FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBlock Text="Введите код:" FontSize="30" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <TextBox Name="txtCode" Grid.Row="0" Margin="0,100,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="200" Height="30" TextAlignment="Center" FontSize="20"/>
             </Grid>
-        
-            <Button Content="Войти" Grid.Row="1" MinHeight="40" VerticalAlignment="Bottom" HorizontalAlignment="Center" MinWidth="200" Margin="0,50,0,25" Click="Button_Click"/>
+
+            <Button Content="Войти" Grid.Row="1" MinHeight="40" VerticalAlignment="Bottom" HorizontalAlignment="Center" MinWidth="200" Background="Gray" Foreground="White" Margin="0,50,0,25" Click="Button_Click"/>
         </StackPanel>
        
     </Grid>

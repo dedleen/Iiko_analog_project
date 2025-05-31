@@ -36,7 +36,7 @@ namespace Kvalif
             LoadWaiters();
             GenerateTableCells();
         }
-        
+
 
         private void LoadTables()
         {
@@ -79,84 +79,123 @@ namespace Kvalif
 
             using (var context = new OreroMenuEntities())
             {
-                for (int i = 1; i <= 9; i++)
+                var allTables = context.Tables.OrderBy(t => t.Number).ToList();
+
+                foreach (var table in allTables)
                 {
                     var existingOrder = context.Orders.FirstOrDefault(o =>
-                        o.TableID == i &&
-                        o.Status == "Открыт" &&
-                       (showAllOrders || o.WaiterID == SessionData.Instance.UserID));
+                        o.TableID == table.TableID &&
+                        o.Status == "Открыт");
 
                     Button btn = new Button
                     {
                         FontSize = 16,
-                        Tag = i,
+                        Tag = table.TableID,
                         Padding = new Thickness(5),
                         Margin = new Thickness(5),
                         Height = 100,
-                        Width = 150
+                        Width = 150,
+                        Background = Brushes.White,    
+                        BorderThickness = new Thickness(3)
                     };
 
                     if (existingOrder != null)
                     {
-                        var dishNames = (from d in context.Dishes
-                                         join od in context.OrderDetails on d.DishID equals od.DishId
-                                         where od.OrderID == existingOrder.OrderID
-                                         select d.Name).ToList();
+                        var waiterName = context.Users.FirstOrDefault(u => u.UserID == existingOrder.WaiterID)?.Username ?? "Неизвестно";
 
-                        string dishes = string.Join(", ", dishNames);
-                        string content = $"Стол {i}\nБлюда: {dishes}\nСумма: {existingOrder.TotalSum} ₽";
-
-                        btn.Content = new TextBlock
+                        if (existingOrder.WaiterID == SessionData.Instance.UserID)
                         {
-                            Text = content,
-                            TextWrapping = TextWrapping.Wrap,
-                            FontSize = 14
-                        };
+                           
+                            btn.BorderBrush = Brushes.LimeGreen;
 
-                        int capturedTableId = i;
-                        var table = context.Tables.FirstOrDefault(t => t.TableID == existingOrder.TableID);
-                        if (table != null)
-                        {
+                            var dishNames = (from d in context.Dishes
+                                             join od in context.OrderDetails on d.DishID equals od.DishID
+                                             where od.OrderID == existingOrder.OrderID
+                                             select d.Name).ToList();
+
+                            string dishes = string.Join(", ", dishNames);
+                            string content = $"Стол {table.Number}\nБлюда: {dishes}\nСумма: {existingOrder.TotalSum} ₽";
+
+                            btn.Content = new TextBlock
+                            {
+                                Text = content,
+                                TextWrapping = TextWrapping.Wrap,
+                                FontSize = 14
+                            };
+
                             var capturedTable = table;
                             btn.Click += (s, e) =>
                             {
                                 _mainFrame.Navigate(new OrderPage(_mainFrame, capturedTable, SessionData.Instance.UserID));
                             };
                         }
+                        else
+                        {
+                           
+                            btn.BorderBrush = Brushes.Gray;
+
+                            string content = $"Стол {table.Number}\nОфициант: {waiterName}";
+
+                            btn.Content = new TextBlock
+                            {
+                                Text = content,
+                                TextWrapping = TextWrapping.Wrap,
+                                FontSize = 14,
+                                Foreground = Brushes.DarkGray,
+                                FontStyle = FontStyles.Italic
+                            };
+                            if (SessionData.Instance.UserRole == "Waiter")
+                            { 
+                                btn.Click += (s, e) =>
+                                {
+                                    MessageBox.Show($"Этот стол занят другим официантом: {waiterName}");
+                                };
+                            
+                            }
+                            else
+                            {
+                                btn.Click += (s, e) =>
+                                {
+                                    _mainFrame.Navigate(new OrderPage(_mainFrame, table, SessionData.Instance.UserID));
+                                };
+                            }
+                        }
                     }
                     else
                     {
+                        
+                        btn.BorderBrush = Brushes.Gray;
+                        btn.BorderThickness = new Thickness(1);
+
                         btn.Content = new TextBlock
                         {
                             Text = "+",
                             FontSize = 40,
                             HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Center
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Foreground = Brushes.Black
                         };
 
-                        int capturedTableId = i;
+                        var capturedTable = table;
+
                         btn.Click += (s, e) =>
                         {
                             using (var contextInner = new OreroMenuEntities())
                             {
-                                var existingOrderInner = contextInner.Orders.FirstOrDefault(o =>
-                                    o.TableID == capturedTableId &&
+                                var otherOrder = contextInner.Orders.FirstOrDefault(o =>
+                                    o.TableID == capturedTable.TableID &&
                                     o.Status == "Открыт");
 
-                                if (existingOrderInner != null)
+                                if (otherOrder != null)
                                 {
-                                    var table = contextInner.Tables.FirstOrDefault(t => t.TableID == capturedTableId);
-                                    if (table != null)
-                                    {
-                                        _mainFrame.Navigate(new OrderPage(_mainFrame, table, SessionData.Instance.UserID));
-                                    }
+                                    var otherWaiter = contextInner.Users.FirstOrDefault(u => u.UserID == otherOrder.WaiterID)?.Username ?? "Неизвестно";
+                                    MessageBox.Show($"Этот стол занят другим официантом: {otherWaiter}");
+                                    return;
                                 }
-                                else
-                                {
-                                    TablesWindow tablesWindow = new TablesWindow(_mainFrame);
-                                    tablesWindow.ShowDialog();
-                                    GenerateTableCells();
-                                }
+
+                                TablesWindow tablesWindow = new TablesWindow(_mainFrame);
+                                tablesWindow.ShowDialog();
+                                GenerateTableCells();
                             }
                         };
                     }

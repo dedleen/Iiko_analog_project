@@ -195,7 +195,7 @@
           </Key>
           <Property Name="DetailID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="OrderID" Type="Int32" Nullable="false" />
-          <Property Name="DishId" Type="Int32" Nullable="false" />
+          <Property Name="DishID" Type="Int32" Nullable="false" />
           <Property Name="Quantity" Type="Int32" Nullable="false" />
           <Property Name="IsServed" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Dishes" Relationship="Self.FK_OrderDetails_Dishes" FromRole="OrderDetails" ToRole="Dishes" />
@@ -265,7 +265,7 @@
               <PropertyRef Name="DishID" />
             </Principal>
             <Dependent Role="OrderDetails">
-              <PropertyRef Name="DishId" />
+              <PropertyRef Name="DishID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -366,7 +366,7 @@
               <MappingFragment StoreEntitySet="OrderDetails">
                 <ScalarProperty Name="DetailID" ColumnName="DetailID" />
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />
-                <ScalarProperty Name="DishId" ColumnName="DishId" />
+                <ScalarProperty Name="DishID" ColumnName="DishId" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="IsServed" ColumnName="IsServed" />
               </MappingFragment>

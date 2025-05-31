@@ -38,8 +38,8 @@
                    MouseLeftButtonUp="Click_LogOut"
                    Visibility="Visible"/>
             <Image x:Name="MenuOutButton" Source="/Assets/menu.png"
-            HorizontalAlignment="Right" 
-            Margin="5,5, 90,5"
+            HorizontalAlignment="Left" 
+            Margin="30,5, 5,5"
              MouseLeftButtonUp="Click_MenuOut"
              Visibility="Visible"/>
         </Grid>

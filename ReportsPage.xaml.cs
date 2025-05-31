@@ -36,10 +36,10 @@ namespace Kvalif
             {
                 var reportData = context.Orders
                     .Where(o => o.Status == "Закрыт")
-                    .GroupBy(o => DbFunctions.TruncateTime(o.DateCreated))  // <-- Вот здесь
+                    .GroupBy(o => DbFunctions.TruncateTime(o.DateCreated))  
                     .Select(g => new
                     {
-                        Date = g.Key,  // DateTime? (nullable)
+                        Date = g.Key,  
                         TotalRevenue = g.Sum(o => o.TotalSum)
                     })
                     .OrderBy(r => r.Date)
